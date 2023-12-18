@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import ConnectWallet from "@/components/Layout/ConnectWallet";
+import MainProvider from "./Context";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,10 +19,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="border-b-2 h-16 px-6 bg-card text-card-foreground shadow-sm flex justify-end items-center">
-          <ConnectWallet />
-        </div>
-        {children}
+        <MainProvider>
+          <div className="border-b-2 h-16 px-6 bg-card text-card-foreground shadow-sm flex justify-end items-center">
+            <ConnectWallet />
+          </div>
+          {children}
+        </MainProvider>
       </body>
     </html>
   );

@@ -17,8 +17,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useState } from "react";
+import { useMainContext } from "../Context";
 
 export default function Dashboard() {
+  const { signer } = useMainContext();
+  console.log("signer from card", signer);
+
   const [network, setNetwork] = useState("");
 
   const handleStartTxn = () => {
