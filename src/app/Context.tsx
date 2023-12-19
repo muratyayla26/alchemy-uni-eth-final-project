@@ -28,9 +28,7 @@ const Provider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     async function getAccounts() {
       const accounts = await provider.send("eth_requestAccounts", []);
-      console.log("context accounts", accounts);
       const _signer = await provider.getSigner();
-      console.log("context signer", _signer);
 
       setAccount(accounts[0]);
       setSigner(_signer);

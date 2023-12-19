@@ -3,8 +3,15 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import ConnectWallet from "@/components/Layout/ConnectWallet";
 import MainProvider from "./Context";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
+
+declare global {
+  interface Window {
+    ethereum: any;
+  }
+}
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -24,6 +31,7 @@ export default function RootLayout({
             <ConnectWallet />
           </div>
           {children}
+          <Toaster />
         </MainProvider>
       </body>
     </html>
