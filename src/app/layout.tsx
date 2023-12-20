@@ -27,7 +27,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <MainProvider>
-          <div className="border-b-2 h-16 px-6 bg-card text-card-foreground shadow-sm flex justify-end items-center">
+          <div className="sticky top-0 z-50 border-b-2 h-16 px-6 bg-card text-card-foreground shadow-sm flex justify-end items-center">
             <ConnectWallet />
           </div>
           {children}
