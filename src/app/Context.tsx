@@ -8,6 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { useToast } from "@/components/ui/use-toast";
 
 interface MainContextType {
   signer: JsonRpcSigner | undefined;
@@ -22,20 +23,30 @@ export const Context = createContext<MainContextType>({
 });
 
 const Provider = ({ children }: { children: ReactNode }) => {
+  const { toast } = useToast();
   const [signer, setSigner] = useState<JsonRpcSigner>();
   const [account, setAccount] = useState("");
 
   useEffect(() => {
     async function getAccounts() {
-      const accounts = await provider.send("eth_requestAccounts", []);
-      const _signer = await provider.getSigner();
+      try {
+        const accounts = await provider.send("eth_requestAccounts", []);
+        const _signer = await provider.getSigner();
 
-      setAccount(accounts[0]);
-      setSigner(_signer);
+        setAccount(accounts[0]);
+        setSigner(_signer);
+      } catch (err) {
+        console.log(err);
+        toast({
+          variant: "destructive",
+          title: "Something went wrong, could not connect wallet.",
+        });
+      }
     }
     if (window.ethereum) {
       getAccounts();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account]);
 
   const exposed = useMemo(

@@ -78,8 +78,8 @@ const LockNewDeposit = () => {
           </div>
         ),
       });
-    } catch (e) {
-      console.log(e);
+    } catch (err) {
+      console.log(err);
       toast({
         variant: "destructive",
         title: !window.ethereum
