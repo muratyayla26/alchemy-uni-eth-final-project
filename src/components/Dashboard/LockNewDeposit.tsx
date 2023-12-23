@@ -28,7 +28,8 @@ import TimeLockContract from "@/lib/contracts/TimeLockEscrow.sol/TimeLockEscrow.
 const LockNewDeposit = () => {
   const { toast } = useToast();
   const { signer } = useMainContext();
-  const [network, setNetwork] = useState("");
+  const [network, setNetwork] = useState("ETH_SEPOLIA");
+  const [timeUnit, setTimeUnit] = useState("DAY");
   const [recipient, setRecipient] = useState("");
   const [amount, setAmount] = useState("");
   const [lockTime, setLockTime] = useState("");
@@ -56,7 +57,11 @@ const LockNewDeposit = () => {
         return;
       }
 
-      const lockTimestamp = Math.trunc(Number(lockTime) * 24 * 60 * 60);
+      const lockTimestamp =
+        timeUnit === "DAY"
+          ? Math.trunc(Number(lockTime) * 24 * 60 * 60)
+          : Math.trunc(Number(lockTime) * 60 * 60);
+
       const createDeposit = await deployedContract.createDeposit(
         typeof ensResolved === "string" ? ensResolved : recipient,
         lockTimestamp,
@@ -91,13 +96,28 @@ const LockNewDeposit = () => {
     }
   };
 
-  const handleNetworkChange = (e: string) => {
-    console.log(e);
-    setNetwork(e);
+  const handleNetworkChange = async (e: string) => {
+    try {
+      if (e === "POLYGON") {
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: "0x5A2" }],
+        });
+      } else {
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: "0xaa36a7" }],
+        });
+      }
+      setNetwork(e);
+    } catch (err: any) {
+      console.log(err);
+      toast({
+        variant: "destructive",
+        title: err?.message || "Something went wrong.",
+      });
+    }
   };
-
-  const coinSymbol =
-    network === "ETH_SEPOLIA" ? "(ETH)" : network === "POLYGON" ? "(MTC)" : "";
 
   return (
     <Card className="w-full">
@@ -106,13 +126,13 @@ const LockNewDeposit = () => {
       </CardHeader>
       <CardContent>
         <div className="grid w-full max-w-sm items-center gap-3.5">
-          <Select onValueChange={handleNetworkChange}>
+          <Select onValueChange={handleNetworkChange} value={network}>
             <SelectTrigger>
               <SelectValue placeholder="Select a network" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ETH_SEPOLIA">ETH (Sepolia)</SelectItem>
-              <SelectItem value="POLYGON">POLYGON</SelectItem>
+              <SelectItem value="ETH_SEPOLIA">Ethereum (Sepolia)</SelectItem>
+              <SelectItem value="POLYGON">Polygon zkEVM</SelectItem>
             </SelectContent>
           </Select>
           <div className="grid w-full max-w-sm items-center gap-1.5">
@@ -125,7 +145,7 @@ const LockNewDeposit = () => {
             />
           </div>
           <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="Amount">Amount {coinSymbol}</Label>
+            <Label htmlFor="Amount">Amount (ETH)</Label>
             <Input
               id="Amount"
               placeholder="Amount"
@@ -133,14 +153,27 @@ const LockNewDeposit = () => {
               onChange={(e) => setAmount(e.target.value)}
             />
           </div>
-          <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="TimeLock">Time Lock (Day)</Label>
-            <Input
-              id="TimeLock"
-              placeholder="Time Lock"
-              value={lockTime}
-              onChange={(e) => setLockTime(e.target.value)}
-            />
+          <div className="flex w-full max-w-sm items-end gap-1.5">
+            <div className="grid flex-1 max-w-sm items-center gap-1.5">
+              <Label htmlFor="TimeLock">Time Lock</Label>
+              <Input
+                id="TimeLock"
+                placeholder="Time Lock"
+                value={lockTime}
+                onChange={(e) => setLockTime(e.target.value)}
+              />
+            </div>
+            <div className="w-36">
+              <Select onValueChange={(e) => setTimeUnit(e)} value={timeUnit}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select day / hour" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="DAY">Day(s)</SelectItem>
+                  <SelectItem value="HOUR">Hour(s)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
       </CardContent>
