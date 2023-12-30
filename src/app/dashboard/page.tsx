@@ -13,20 +13,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import useETH from "@/lib/useETH";
 
 export default function Dashboard() {
   const { toast } = useToast();
+  const [windowETH] = useETH();
   const [network, setNetwork] = useState("ETH_SEPOLIA");
 
   const handleNetworkChange = async (e: string) => {
     try {
       if (e === "POLYGON") {
-        await window.ethereum.request({
+        await windowETH?.request({
           method: "wallet_switchEthereumChain",
           params: [{ chainId: "0x5A2" }],
         });
       } else {
-        await window.ethereum.request({
+        await windowETH?.request({
           method: "wallet_switchEthereumChain",
           params: [{ chainId: "0xaa36a7" }],
         });
@@ -36,7 +38,7 @@ export default function Dashboard() {
       console.log(err);
       toast({
         variant: "destructive",
-        title: !window.ethereum
+        title: !windowETH
           ? "You must have a compatible wallet extension installed in your browser."
           : "Something went wrong.",
       });
@@ -93,3 +95,4 @@ export default function Dashboard() {
     </>
   );
 }
+

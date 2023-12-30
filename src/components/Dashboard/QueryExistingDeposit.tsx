@@ -18,10 +18,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import TimeLockContract from "@/lib/contracts/TimeLockEscrow.sol/TimeLockEscrow.json";
+import useETH from "@/lib/useETH";
 
 const QueryExistingDeposit = () => {
   const { toast } = useToast();
   const { signer } = useMainContext();
+  const [windowETH, provider] = useETH();
   const [otherSideAddress, setOtherSideAddress] = useState("");
   const [userStatus, setUserStatus] = useState("userIsSender");
   const [queryProcessing, setQueryProcessing] = useState(false);
@@ -41,11 +43,16 @@ const QueryExistingDeposit = () => {
         signer
       );
 
-      const ensResolvedOtherSide = await ensResolver(otherSideAddress);
+      const ensResolvedOtherSide = await ensResolver(
+        otherSideAddress,
+        provider
+      );
       if (!ensResolvedOtherSide) {
         toast({
           variant: "destructive",
-          title: "There is no valid address for provided ENS Domain of sender.",
+          title: `There is no valid address for provided ENS Domain of ${
+            userIsSender ? "recipient" : "sender"
+          }.`,
         });
         return;
       }
@@ -75,7 +82,7 @@ const QueryExistingDeposit = () => {
       console.log(err);
       toast({
         variant: "destructive",
-        title: !window.ethereum
+        title: !windowETH
           ? "You must have a compatible wallet extension installed in your browser."
           : "Something went wrong.",
       });

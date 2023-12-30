@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useMainContext } from "@/app/Context";
 import { Button } from "@/components/ui/button";
-import { ethers } from "ethers";
 import {
   Dialog,
   DialogContent,
@@ -11,18 +10,18 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
-const provider = new ethers.BrowserProvider(window.ethereum);
+import useETH from "@/lib/useETH";
 
 const ConnectWallet = () => {
   const { toast } = useToast();
   const { signer, setSigner } = useMainContext();
+  const [windowETH, provider] = useETH();
   const [addWalletDialogOpen, setAddWalletDialogOpen] = useState(false);
 
   const handleConnectWallet = async () => {
-    if (window.ethereum && !signer) {
+    if (windowETH && !signer) {
       try {
-        const _signer = await provider.getSigner();
+        const _signer = await provider?.getSigner();
         setSigner(_signer);
       } catch (err) {
         console.log(err);

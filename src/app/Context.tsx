@@ -1,6 +1,6 @@
 "use client";
 import { usePathname } from "next/navigation";
-import { JsonRpcSigner, ethers } from "ethers";
+import { JsonRpcSigner } from "ethers";
 import { useToast } from "@/components/ui/use-toast";
 import {
   ReactNode,
@@ -10,13 +10,12 @@ import {
   useMemo,
   useState,
 } from "react";
+import useETH from "@/lib/useETH";
 
 interface MainContextType {
   signer: JsonRpcSigner | undefined;
   setSigner: React.Dispatch<React.SetStateAction<JsonRpcSigner | undefined>>;
 }
-
-const provider = new ethers.BrowserProvider(window.ethereum);
 
 export const Context = createContext<MainContextType>({
   signer: undefined,
@@ -26,14 +25,15 @@ export const Context = createContext<MainContextType>({
 const Provider = ({ children }: { children: ReactNode }) => {
   const pathName = usePathname();
   const { toast } = useToast();
+  const [windowETH, provider] = useETH();
   const [signer, setSigner] = useState<JsonRpcSigner>();
   const [account, setAccount] = useState("");
 
   useEffect(() => {
     async function getAccounts() {
       try {
-        const accounts = await provider.send("eth_requestAccounts", []);
-        const _signer = await provider.getSigner();
+        const accounts = await provider?.send("eth_requestAccounts", []);
+        const _signer = await provider?.getSigner();
 
         setAccount(accounts[0]);
         setSigner(_signer);
@@ -45,11 +45,10 @@ const Provider = ({ children }: { children: ReactNode }) => {
         });
       }
     }
-    if (window.ethereum && pathName === "/dashboard") {
+    if (windowETH && pathName === "/dashboard") {
       getAccounts();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account]);
+  }, [account, provider, windowETH, pathName, toast]);
 
   const exposed = useMemo(
     () => ({

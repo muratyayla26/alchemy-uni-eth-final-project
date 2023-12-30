@@ -23,10 +23,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import TimeLockContract from "@/lib/contracts/TimeLockEscrow.sol/TimeLockEscrow.json";
+import useETH from "@/lib/useETH";
 
 const LockNewDeposit = () => {
   const { toast } = useToast();
   const { signer } = useMainContext();
+  const [windowETH, provider] = useETH();
   const [timeUnit, setTimeUnit] = useState("DAY");
   const [recipient, setRecipient] = useState("");
   const [amount, setAmount] = useState("");
@@ -45,7 +47,7 @@ const LockNewDeposit = () => {
         signer
       );
 
-      const ensResolved = await ensResolver(recipient);
+      const ensResolved = await ensResolver(recipient, provider);
       if (!ensResolved) {
         toast({
           variant: "destructive",
@@ -85,7 +87,7 @@ const LockNewDeposit = () => {
       console.log(err);
       toast({
         variant: "destructive",
-        title: !window.ethereum
+        title: !windowETH
           ? "You must have a compatible wallet extension installed in your browser."
           : "Something went wrong.",
       });
@@ -164,3 +166,4 @@ const LockNewDeposit = () => {
 };
 
 export default LockNewDeposit;
+
