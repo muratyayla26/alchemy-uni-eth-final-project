@@ -1,5 +1,7 @@
 "use client";
+import { usePathname } from "next/navigation";
 import { JsonRpcSigner, ethers } from "ethers";
+import { useToast } from "@/components/ui/use-toast";
 import {
   ReactNode,
   createContext,
@@ -8,7 +10,6 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useToast } from "@/components/ui/use-toast";
 
 interface MainContextType {
   signer: JsonRpcSigner | undefined;
@@ -23,6 +24,7 @@ export const Context = createContext<MainContextType>({
 });
 
 const Provider = ({ children }: { children: ReactNode }) => {
+  const pathName = usePathname();
   const { toast } = useToast();
   const [signer, setSigner] = useState<JsonRpcSigner>();
   const [account, setAccount] = useState("");
@@ -43,7 +45,7 @@ const Provider = ({ children }: { children: ReactNode }) => {
         });
       }
     }
-    if (window.ethereum) {
+    if (window.ethereum && pathName === "/dashboard") {
       getAccounts();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

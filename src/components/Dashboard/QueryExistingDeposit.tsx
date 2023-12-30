@@ -1,4 +1,3 @@
-"use client";
 import { useState } from "react";
 import { useMainContext } from "@/app/Context";
 import { useToast } from "@/components/ui/use-toast";
@@ -285,3 +284,4 @@ const QueryExistingDeposit = () => {
 };
 
 export default QueryExistingDeposit;
+

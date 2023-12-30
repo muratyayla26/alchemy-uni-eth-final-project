@@ -1,4 +1,3 @@
-"use client";
 import { useState } from "react";
 import { useMainContext } from "@/app/Context";
 import { useToast } from "@/components/ui/use-toast";
@@ -28,7 +27,6 @@ import TimeLockContract from "@/lib/contracts/TimeLockEscrow.sol/TimeLockEscrow.
 const LockNewDeposit = () => {
   const { toast } = useToast();
   const { signer } = useMainContext();
-  const [network, setNetwork] = useState("ETH_SEPOLIA");
   const [timeUnit, setTimeUnit] = useState("DAY");
   const [recipient, setRecipient] = useState("");
   const [amount, setAmount] = useState("");
@@ -96,29 +94,6 @@ const LockNewDeposit = () => {
     }
   };
 
-  const handleNetworkChange = async (e: string) => {
-    try {
-      if (e === "POLYGON") {
-        await window.ethereum.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: "0x5A2" }],
-        });
-      } else {
-        await window.ethereum.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: "0xaa36a7" }],
-        });
-      }
-      setNetwork(e);
-    } catch (err: any) {
-      console.log(err);
-      toast({
-        variant: "destructive",
-        title: err?.message || "Something went wrong.",
-      });
-    }
-  };
-
   return (
     <Card className="w-full">
       <CardHeader>
@@ -126,15 +101,6 @@ const LockNewDeposit = () => {
       </CardHeader>
       <CardContent>
         <div className="grid w-full max-w-sm items-center gap-3.5">
-          <Select onValueChange={handleNetworkChange} value={network}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select a network" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ETH_SEPOLIA">Ethereum (Sepolia)</SelectItem>
-              <SelectItem value="POLYGON">Polygon zkEVM</SelectItem>
-            </SelectContent>
-          </Select>
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label htmlFor="Recipient">Recipient address or ENS Domain</Label>
             <Input
