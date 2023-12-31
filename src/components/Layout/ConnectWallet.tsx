@@ -30,7 +30,7 @@ const ConnectWallet = () => {
           title: "Something went wrong, could not connect wallet.",
         });
       }
-    } else {
+    } else if (!windowETH) {
       setAddWalletDialogOpen(true);
     }
   };
