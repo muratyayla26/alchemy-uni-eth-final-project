@@ -12,6 +12,7 @@ Features of the application include:
 ## Technologies
 * Solidity
 * Ethers.js
+* Next.js
 * React
 * TypeScript
 * Tailwind CSS
